@@ -64,11 +64,17 @@ function findNodeIdsForNames({ file, names }) {
 }
 
 /* Request images for some assets, and combine multiple scales into one object per asset */
-async function getAssetImages(api, fileKey, assetList, scales = [1]) {
+async function getAssetImages({
+    api,
+    fileKey,
+    assetList,
+    scales = [1],
+    format = 'png',
+}) {
     async function getImageList(scale) {
         return api.get(`images/${fileKey}`, {
             ids: Object.values(assetList),
-            format: 'png',
+            format,
             scale,
         });
     }
@@ -117,6 +123,7 @@ async function getFigmaIconsByFrames({
     fileKey,
     personalAccessToken,
     scales = [1],
+    format = 'png',
     fetchFunc = window.fetch,
 }) {
     const api = new figmaApi({ personalAccessToken, fetchFunc });
@@ -134,7 +141,7 @@ async function getFigmaIconsByFrames({
 
     const assetList = makeAssetList(frames);
 
-    return await getAssetImages(api, fileKey, assetList, scales);
+    return await getAssetImages({ api, fileKey, assetList, scales, format });
 }
 
 module.exports = { getFigmaIconsByFrames };
