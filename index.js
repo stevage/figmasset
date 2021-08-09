@@ -154,6 +154,10 @@ function addAssetsToMap(map, assets) {
 }
 
 async function loadFigmassets({ map, ...otherArgs }) {
+    if (map && !otherArgs.scales) {
+        // makes sense to load map assets at 2x
+        otherArgs.scales = [2];
+    }
     const assets = await getFigmassets(otherArgs);
     if (map) {
         addAssetsToMap(map, assets);

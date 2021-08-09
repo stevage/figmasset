@@ -58,6 +58,8 @@ loadFigmassets({
   personalAccessToken: 'snt34h5sn24h5', // get this from your user > Settings page. Be careful who you expose this to, it provides unrestricted access to your account
   scales: [2], // pixel ratios. [1,2] fetches both @1x and @2x versions of each asset.
 });
+
+// you can now access your icon like this:
 map.addLayer({
   id: 'mypin',
   type: 'symbol',
@@ -110,12 +112,32 @@ Note that the assets named `pin-cluster` and `pin-cluster-selected` in the `pins
 
 ### Moving to production
 
+#### loadStoredFigmassets
+
 Once your asset designs have stabilised you will want to move to production without loading them from Figma dynamically. You can use [`figmasset-export`](https://www.npmjs.com/package/figmasset-export) for this. The process is:
 
 1. Run figmasset-export to download assets and generate an asset metadata file, in a directory inside your web app. (Say its URL path is `static`, so you now have `static/assets@2x/assets.json` and so on).
-2. Switch out the `loadFigmassets()` call above with `loadStoredFigmassets()` like this:
 
+For instance:
+
+```
+cd static
+npx figmasset-export --file ABC123  --token snt34h5sn24h5 --frame 'pins,pins-alt-clustering'
+```
+
+2. Switch out the `loadFigmassets()` call above with `loadStoredFigmassets()` like this:
 
 ```js
 loadStoredFigmassets({ map, path: 'static/assets@2x' });
 ```
+
+#### Generate a spritesheet
+
+For better performance, you may want to generate a spritesheet instead of loading the icons one at a time, using `figmasset-export` and [`mbsprite`](https://www.npmjs.com/package/mbsprite) along these lines:
+
+```
+figmasset-export --file ABC123 --frame myframe myotherframe --frame pins --scale 1 2 --out assets
+npx mbsprite bundle sprite assets@1x assets@2x
+```
+
+See the `mbsprite` documentation for more details, including how to extract icons from an existing spritesheet to merge them.
