@@ -1,37 +1,31 @@
-class figmaApi {
-    _personalAccessToken;
-    _fetchFunc;
-    constructor({ personalAccessToken, fetchFunc }) {
-        this._personalAccessToken = personalAccessToken;
-        this._fetchFunc = fetchFunc;
-    }
-    async get(api, params) {
-        const search = params
-            ? '?' + new URLSearchParams(params).toString()
-            : '';
-        const response = await this._fetchFunc(
-            `https://api.figma.com/v1/${api}${search}`,
-            {
-                headers: { 'X-Figma-Token': this._personalAccessToken },
-            }
-        );
-        if (response.status >= 400) {
-            let extra = '';
-            try {
-                extra += (await response.json()).err;
-            } finally {
-                throw new Error(
-                    `HTTP error ${response.status} accessing Figma. ${extra}`
-                );
-            }
-        }
-        return response.json();
-    }
+function figmaApi({ personalAccessToken, fetchFunc }) {
+    this._personalAccessToken = personalAccessToken;
+    this._fetchFunc = fetchFunc;
 }
+figmaApi.prototype.get = async function (api, params) {
+    const search = params ? '?' + new URLSearchParams(params).toString() : '';
+    const response = await this._fetchFunc(
+        `https://api.figma.com/v1/${api}${search}`,
+        {
+            headers: { 'X-Figma-Token': this._personalAccessToken },
+        }
+    );
+    if (response.status >= 400) {
+        let extra = '';
+        try {
+            extra += (await response.json()).err;
+        } finally {
+            throw new Error(
+                `HTTP error ${response.status} accessing Figma. ${extra}`
+            );
+        }
+    }
+    return response.json();
+};
 
 // For each nodeId, find its corresponding node by searching the document.
 // Note this is pretty inefficient, we can end up traversing the entire document quite a few times. Likely insignificant on smallish documents.
-function findNodesById({ file, nodeIds }) {
+findNodesById = function ({ file, nodeIds }) {
     function findNode(nodeId, searchNode) {
         if (nodeId === searchNode.id) {
             return searchNode;
@@ -44,9 +38,9 @@ function findNodesById({ file, nodeIds }) {
         }
     }
     return nodeIds.map((nodeId) => findNode(nodeId, file.document));
-}
+};
 
-function findNodeIdsForNames({ file, names }) {
+findNodeIdsForNames = function ({ file, names }) {
     // find node IDs for names with a depth-first search
     function findNameInNode(name, node) {
         if (name === node.name && node.type === 'FRAME') {
@@ -61,7 +55,7 @@ function findNodeIdsForNames({ file, names }) {
     }
 
     return names.map((name) => findNameInNode(name, file.document));
-}
+};
 
 /* Request images for some assets, and combine multiple scales into one object per asset */
 async function getAssetImages({
@@ -117,14 +111,14 @@ Return format:
   ...
 }
 */
-async function getFigmaIconsByFrames({
+async function getFigmassets({
     frameIds = [],
     frameNames = [],
     fileKey,
     personalAccessToken,
     scales = [1],
     format = 'png',
-    fetchFunc = window.fetch,
+    fetchFunc = (...args) => window.fetch(...args),
 }) {
     const api = new figmaApi({ personalAccessToken, fetchFunc });
     const file = await api.get(`files/${fileKey}`);
@@ -144,4 +138,46 @@ async function getFigmaIconsByFrames({
     return await getAssetImages({ api, fileKey, assetList, scales, format });
 }
 
-module.exports = { getFigmaIconsByFrames };
+function addAssetsToMap(map, assets) {
+    for (const iconId of Object.keys(assets)) {
+        const scale = Math.max(
+            ...Object.keys(assets[iconId])
+                .filter((k) => k[0] === '@')
+                .map((k) => +k.replace(/[^0-9.]/g, ''))
+        );
+        map.loadImage(assets[iconId][`@${scale}x`], (error, image) => {
+            this.map.addImage(iconId, image, {
+                pixelRatio: scale,
+            });
+        });
+    }
+}
+
+async function loadFigmassets({ map, ...otherArgs }) {
+    const assets = await getFigmassets(otherArgs);
+    if (map) {
+        addAssetsToMap(map, assets);
+    }
+    return assets;
+}
+
+// path is URL path to directory containing assets.json and every referenced image
+async function loadStoredFigmassets({ map, path = '' }) {
+    if (path) {
+        path = path.replace(/([^/])$/, '$1/');
+    }
+    const assets = await fetch(`${path}assets.json`).then((r) => r.json());
+    for (const asset of assets) {
+        map.loadImage(`${path}${asset.fileName}`, (error, image) => {
+            this.map.addImage(asset.id, image, { pixelRatio: asset.scale });
+        });
+    }
+}
+
+module.exports = {
+    getFigmaIconsByFrames: getFigmassets,
+    getFigmassets,
+    addAssetsToMap,
+    loadFigmassets,
+    loadStoredFigmassets,
+};
