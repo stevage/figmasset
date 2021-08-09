@@ -20,8 +20,6 @@ In Figma, arrange your assets as top-level children under one or more frames. Th
 
 ![](layout.png)
 
-(Some of the assets are frames, some are groups - this is fine.)
-
 
 ```
 # pins
@@ -33,6 +31,14 @@ In Figma, arrange your assets as top-level children under one or more frames. Th
   # pin-cluster
   # pin-cluster-selected
 ```
+
+(Some of the assets are frames, some are groups - this is fine.)
+
+Naming:
+
+* Top-level frame names should not contain spaces or commas.
+* Top-level frame names are *not* case-sensitive.
+* Asset names *are* case-sensitive. We recommend lower-case.
 
 Get the file key from the URL. Given a URL like https://www.figma.com/file/ABC123/Untitled?node-id=0%3A1, "ABC123" is your file key.
 

@@ -1,8 +1,19 @@
 {
-  "name": "figmasset",
-  "version": "0.1.0",
-  "main": "index.js",
-  "files": [
-    "index.js"
-  ]
+    "name": "figmasset",
+    "description": "Easily fetch a bunch of assets from Figma for possible use in a Mapbox GL JS map.",
+    "author": {
+        "name": "Steve Bennett",
+        "email": "stevage@gmail.com",
+        "url": "https://stevebennett.me"
+    },
+    "version": "0.1.0",
+    "main": "index.js",
+    "files": [
+        "index.js",
+        "layout.png"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stevage/figmasset"
+    }
 }
