@@ -6,8 +6,16 @@
         "email": "stevage@gmail.com",
         "url": "https://stevebennett.me"
     },
-    "keywords": ["figma","mapbox","icon","asset","mapbox-gl-js","maplibre-gl-js", "design"],
-    "version": "0.1.1",
+    "keywords": [
+        "figma",
+        "mapbox",
+        "icon",
+        "asset",
+        "mapbox-gl-js",
+        "maplibre-gl-js",
+        "design"
+    ],
+    "version": "0.1.2",
     "main": "index.js",
     "files": [
         "index.js",
