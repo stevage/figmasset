@@ -18,21 +18,26 @@ Figmasset can be used in Node by importing the `node-fetch` library and passing 
 
 In Figma, arrange your assets as top-level children under one or more frames. That is, your Layers sidebar should look something like this:
 
+![](layout.png)
+
+(Some of the assets are frames, some are groups - this is fine.)
+
+
 ```
-# myframe
-  # mycircle
-  # myrectangle
-# myotherframe
-  # myexclamation
-    - dot
-    - straight bit
-# other frame I don't care about
-  # junk
+# pins
+  # pin
+  # pin-cluster
+  # pin-selected
+  # pin-cluster-selected
+# pins-alt-clustering
+  # pin-cluster
+  # pin-cluster-selected
 ```
 
 Get the file key from the URL. Given a URL like https://www.figma.com/file/ABC123/Untitled?node-id=0%3A1, "ABC123" is your file key.
 
 ### Loading your assets
+
 
 ```js
 import { getFigmaIconsByFrames } from 'figmasset';
@@ -40,7 +45,7 @@ import { getFigmaIconsByFrames } from 'figmasset';
 async function loadAssets() {
     return getFigmaIconsByFrames({
         // frameIds = [], // you can specify frames by their node ID (in the URL)
-        frameNames = ['myframe', 'myotherframe'],
+        frameNames = ['pins', 'pins-alt-clustering'],
         fileKey: 'ABC123',
         personalAccessToken: 'snt34h5sn24h5', // get this from your user > Settings page. Be careful who you expose this to, it provides unrestricted access to your account
         scales: [1, 2], // pixel ratios. [1,2] fetches both @1x and @2x versions of each asset.
@@ -54,14 +59,18 @@ The Figma API can take a few seconds to generate PNG versions of assets. Once it
 
 ```js
 {
-  'mycircle': {
+  pin: {
     id: '2:8', // the node ID
     '@1x': 'https://s3-us-west-2.amazonaws.com/figma-alpha-api/img/5b83/a061/e42384a5bc5a5ac5cabcb5a5cabcb5c5,
     '@2x': 'https://s3-us-west-2.amazonaws.com/figma-alpha-api/img/af20/18b77f7fe7ee57f5efe5ef5ee7eaa2f32aea0'
   },
-  ...
+  'pin-cluster': { ... },
+  'pin-selected': { ... },
+  'pin-cluster-selected': { ... },
 }
 ```
+
+Note that the assets named `pin-cluster` and `pin-cluster-selected` in the `pins-alt-clustering` frame will be used, rather than those in `pins`. That's because the names match, and `pins-alt-clustering` was specified after `pins`.
 
 ### Loading assets into Mapbox GL JS or Maplibre GL JS
 
