@@ -53,7 +53,7 @@ import { loadFigmassets } from 'figmasset';
 
 loadFigmassets({
   map, // Mapbox GL JS or Maplibre GL JS object
-  frameNames = ['pins', 'pins-alt-clustering'],
+  frameNames: ['pins', 'pins-alt-clustering'],
   fileKey: 'ABC123',
   personalAccessToken: 'snt34h5sn24h5', // get this from your user > Settings page. Be careful who you expose this to, it provides unrestricted access to your account
   scales: [2], // pixel ratios. [1,2] fetches both @1x and @2x versions of each asset.

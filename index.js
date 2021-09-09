@@ -146,7 +146,7 @@ function addAssetsToMap(map, assets) {
                 .map((k) => +k.replace(/[^0-9.]/g, ''))
         );
         map.loadImage(assets[iconId][`@${scale}x`], (error, image) => {
-            this.map.addImage(iconId, image, {
+            map.addImage(iconId, image, {
                 pixelRatio: scale,
             });
         });
@@ -173,7 +173,7 @@ async function loadStoredFigmassets({ map, path = '' }) {
     const assets = await fetch(`${path}assets.json`).then((r) => r.json());
     for (const asset of assets) {
         map.loadImage(`${path}${asset.fileName}`, (error, image) => {
-            this.map.addImage(asset.id, image, { pixelRatio: asset.scale });
+            map.addImage(asset.id, image, { pixelRatio: asset.scale });
         });
     }
 }
