@@ -9,6 +9,7 @@ This has two main uses:
 1. Loading different groups of assets worked on by different people
 2. Loading a "base" set of icons and an "override" set, so you can iterate on designs of a few icons without having to duplicate all the base icons.
 
+Once your designs have stabilised, it is easy to export all assets into your web app. See "Moving to production".
 
 Figmasset can be used in Node by importing the `node-fetch` library and passing it as the `fetchFunc` parameter.
 
@@ -77,18 +78,17 @@ You can use Figmasset outside of a map (for instance, to overlay static images).
 ```js
 import { getFigmassets } from 'figmasset';
 
-async function loadAssets() {
-    return getFigmassets({
-        frameNames = ['pins', 'pins-alt-clustering'],
-        fileKey: 'ABC123',
-        personalAccessToken: 'snt34h5sn24h5', // get this from your user > Settings page. Be careful who you expose this to, it provides unrestricted access to your account
-        scales: [1, 2], // pixel ratios. [1,2] fetches both @1x and @2x versions of each asset.
+loadFigmassets({
+    frameNames = ['pins', 'pins-alt-clustering'],
+    fileKey: 'ABC123',
+    personalAccessToken: 'snt34h5sn24h5', // get this from your user > Settings page. Be careful who you expose this to, it provides unrestricted access to your account
+    scales: [1, 2], // pixel ratios. [1,2] fetches both @1x and @2x versions of each asset.
 
-        // other options:
-        // frameIds = [], // you can specify frames by their node ID (in the URL) instead of frameNames
-        // format: 'png', // svg is also supported
-        // fetchFunc: nodeFetch // in the browser, window.fetch is used. If using in Node, pass in the node-fetch library.
-    });
+    // other options:
+    // frameIds = [], // you can specify frames by their node ID (in the URL) instead of frameNames
+    // format: 'png', // svg is also supported
+    // fetchFunc: nodeFetch // in the browser, window.fetch is used. If using in Node, pass in the node-fetch library.
+});
 }
 ```
 
